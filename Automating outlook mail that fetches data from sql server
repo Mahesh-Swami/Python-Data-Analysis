@@ -1,0 +1,49 @@
+import pyodbc
+import win32com.client as win32
+
+ 
+
+def fetch_data_from_sql_server(server, database, username, password, query):
+    connection_string = f"DRIVER={{SQL Server}};SERVER={server};DATABASE={database};UID={username};PWD={password}"
+    connection = pyodbc.connect(connection_string)
+    cursor = connection.cursor()
+    cursor.execute(query)
+    data = cursor.fetchall()  
+    connection.close() 
+    return data
+    
+
+def send_outlook_email(subject, body, recipient_email, attachment_path=None):
+    outlook = win32.Dispatch("Outlook.Application")
+    mail = outlook.CreateItem(0)
+    mail.Subject = subject
+    mail.Body = body
+    mail.To = recipient_email
+
+    if attachment_path:
+        mail.Attachments.Add(attachment_path)
+
+    mail.Send()
+
+if __name__ == "__main__":
+    # Replace these variables with your SQL Server credentials and query
+    sql_server = "Server_name"
+    database = "database_name"
+    username = "your_username"
+    password = "your_pw"
+    sql_query = "query_for_data_you_need_from_sqp_server"
+
+    # Replace these variables with the email details
+    email_subject = "Test mail/Data from SQL Server"
+    email_body = "Hello,\n\nHere is the data fetched from the SQL Server:"
+    recipient_email = "recipients.mail@gmail.com"  # Replace with the recipient's email address
+
+    # Fetch data from SQL Server
+    data = fetch_data_from_sql_server(sql_server, database, username, password, sql_query)
+    
+
+    # Format the data into the email body
+   
+    
+    # Send the email
+    send_outlook_email(email_subject, email_body, recipient_email)
